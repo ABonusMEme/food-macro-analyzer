@@ -1,4 +1,4 @@
-const response = await fetch('https://jayrib.app.n8n.cloud/webhook-test/434e0b3f-4bb4-48c6-90dd-7cd3ce8b563b', {
+const response = await fetch('https://<your-n8n-instance>/webhook/food-image', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
