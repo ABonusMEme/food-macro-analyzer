@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Food Macro Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 1rem;
+      background-color: #e9ffe9;
+      border: 1px solid #c8ffc8;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Food Macro Analyzer</h1>
+    <p>Select an image of your food and click "Analyze Image" to get nutritional macros!</p>
+    <input type="file" id="imageInput" accept="image/*" />
+    <br/>
+    <button id="analyzeBtn">Analyze Image</button>
+    <div id="result"></div>
+  </div>
+  
+  <script>
+    document.getElementById('analyzeBtn').addEventListener('click', async () => {
+      const input = document.getElementById('imageInput');
+      if (!input.files || input.files.length === 0) {
+        alert('Please select an image file.');
+        return;
+      }
+      
+      const file = input.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = async function(event) {
+        const imageData = event.target.result;
+        // Remove the "data:image/...;base64," prefix
+        const base64Data = imageData.split(',')[1];
+        
+        try {
+          const response = await fetch('https://your-n8n-instance.com/webhook/food-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              binary: {
+                data: base64Data
+              }
+            })
+          });
+          
+          const data = await response.json();
+          displayResult(data);
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('result').innerText = 'An error occurred. Please try again.';
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    });
+    
+    function displayResult(data) {
+      const resultDiv = document.getElementById('result');
+      let html = '<h2>Nutritional Information</h2>';
+      
+      if (data.nutrition) {
+        html += '<ul>';
+        for (const [key, value] of Object.entries(data.nutrition)) {
+          html += `<li><strong>${key}:</strong> ${value}</li>`;
+        }
+        html += '</ul>';
+      } else {
+        html += '<p>No nutritional information available.</p>';
+      }
+      
+      resultDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
