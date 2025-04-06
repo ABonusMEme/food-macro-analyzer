@@ -14,7 +14,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     const base64Data = imageData.split(',')[1];
     
     try {
-      const response = await fetch('https://your-n8n-instance.com/webhook/food-image', {
+      const response = await fetch('https://jayrib.app.n8n.cloud/webhook-test/food-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
